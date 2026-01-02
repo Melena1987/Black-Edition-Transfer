@@ -3,7 +3,11 @@ import React, { useState, useEffect } from 'react';
 import { Menu, X, Phone } from 'lucide-react';
 import { WHATSAPP_LINK } from '../constants';
 
-const Navbar: React.FC = () => {
+interface NavbarProps {
+  onNavigateHome?: () => void;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ onNavigateHome }) => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
@@ -20,18 +24,34 @@ const Navbar: React.FC = () => {
     { name: 'Contact', href: '#contacto' },
   ];
 
+  const handleHomeClick = (e: React.MouseEvent) => {
+    if (onNavigateHome) {
+      e.preventDefault();
+      onNavigateHome();
+      // Also trigger a smooth scroll to top after view change
+      setTimeout(() => {
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }, 50);
+    }
+  };
+
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${isScrolled ? 'bg-black/90 backdrop-blur-md py-4' : 'bg-transparent py-6'}`}>
       <div className="max-w-7xl mx-auto px-6 flex justify-between items-center">
-        <a href="#inicio" className="flex flex-col">
-          <span className="text-xl md:text-2xl font-bold tracking-widest text-white serif uppercase">Black Edition</span>
+        <a href="#inicio" onClick={handleHomeClick} className="flex flex-col">
+          <span className="text-xl md:text-2xl font-bold tracking-widest text-white serif uppercase text-nowrap">Black Edition</span>
           <span className="text-[10px] md:text-xs tracking-[0.3em] text-gold uppercase -mt-1 font-semibold">Transfer Marbella</span>
         </a>
 
         {/* Desktop Menu */}
         <div className="hidden md:flex items-center space-x-10">
           {navLinks.map((link) => (
-            <a key={link.name} href={link.href} className="text-sm font-medium hover:text-gold transition-colors tracking-wide uppercase">
+            <a 
+              key={link.name} 
+              href={link.href} 
+              onClick={link.name === 'Home' ? handleHomeClick : undefined}
+              className="text-sm font-medium hover:text-gold transition-colors tracking-wide uppercase"
+            >
               {link.name}
             </a>
           ))}
@@ -59,7 +79,10 @@ const Navbar: React.FC = () => {
             <a 
               key={link.name} 
               href={link.href} 
-              onClick={() => setIsMobileMenuOpen(false)}
+              onClick={(e) => {
+                if (link.name === 'Home') handleHomeClick(e);
+                setIsMobileMenuOpen(false);
+              }}
               className="text-2xl font-semibold serif"
             >
               {link.name}

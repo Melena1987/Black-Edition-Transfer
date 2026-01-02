@@ -3,7 +3,11 @@ import React from 'react';
 import { Phone, MapPin, Instagram, MessageSquare, Clock, Globe, Heart, ArrowRight } from 'lucide-react';
 import { WHATSAPP_NUMBER, WHATSAPP_LINK, PHONE_NUMBER } from '../constants';
 
-const Contact: React.FC = () => {
+interface ContactProps {
+  onNavigateLegal?: () => void;
+}
+
+const Contact: React.FC<ContactProps> = ({ onNavigateLegal }) => {
   return (
     <section id="contacto" className="py-24 bg-black relative overflow-hidden">
       <div className="absolute -top-24 -right-24 w-96 h-96 bg-gold/5 blur-[120px] rounded-full"></div>
@@ -108,8 +112,9 @@ const Contact: React.FC = () => {
         </div>
         <p className="mb-3">© {new Date().getFullYear()} Black Edition Transfer Marbella</p>
         <div className="flex justify-center gap-8 mb-10 opacity-60">
-          <a href="#" className="hover:text-gold transition-colors">Legal Notice</a>
-          <a href="#" className="hover:text-gold transition-colors">Privacy Policy</a>
+          <button onClick={onNavigateLegal} className="hover:text-gold transition-colors">Legal Notice</button>
+          <button onClick={onNavigateLegal} className="hover:text-gold transition-colors">Privacy Policy</button>
+          <button onClick={onNavigateLegal} className="hover:text-gold transition-colors">Cookies</button>
         </div>
         
         <div className="pb-12 flex justify-center">

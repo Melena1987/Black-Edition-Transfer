@@ -18,7 +18,7 @@ export const parseTravelRequest = async (prompt: string) => {
           properties: {
             origin: { type: Type.STRING },
             destination: { type: Type.STRING },
-            serviceType: { type: Type.STRING, enum: ['transfer', 'disposicion'] },
+            serviceType: { type: Type.STRING, enum: ['transfer', 'disposition'] },
             hours: { type: Type.NUMBER },
             passengers: { type: Type.NUMBER },
             date: { type: Type.STRING },
