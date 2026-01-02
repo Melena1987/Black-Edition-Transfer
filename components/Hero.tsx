@@ -29,7 +29,7 @@ const Hero: React.FC = () => {
         >
           <img 
             src={heroImageUrl} 
-            alt="Luxury Mercedes Black Edition" 
+            alt="Luxury Mercedes Black Edition Marbella" 
             className="w-full h-full object-cover brightness-[0.5]"
           />
         </div>

@@ -1,6 +1,6 @@
 
 <!DOCTYPE html>
-<html lang="en">
+<html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,6 +12,8 @@
             font-family: 'Inter', sans-serif;
             background-color: #0a0a0a;
             color: #ffffff;
+            margin: 0;
+            padding: 0;
         }
         h1, h2, h3, .serif {
             font-family: 'Playfair Display', serif;
@@ -38,6 +40,9 @@
         ::-webkit-scrollbar-thumb:hover {
             background: #c5a059;
         }
+        html {
+          scroll-behavior: smooth;
+        }
     </style>
 <script type="importmap">
 {
@@ -53,5 +58,6 @@
 </head>
 <body>
     <div id="root"></div>
+    <script type="module" src="index.tsx"></script>
 </body>
 </html>
