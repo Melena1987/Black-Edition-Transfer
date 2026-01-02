@@ -29,22 +29,23 @@ const Hero: React.FC = () => {
         >
           <img 
             src={heroImageUrl} 
-            alt="Luxury Mercedes Black Edition Marbella" 
+            alt="Mercedes Black Edition XL Luxury Transfer Marbella" 
             className="w-full h-full object-cover brightness-[0.5]"
+            loading="eager"
           />
         </div>
         <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/20 to-black"></div>
       </div>
 
       <div className="relative z-10 text-center px-6 max-w-5xl animate-in fade-in slide-in-from-bottom duration-1000">
-        <h2 className="text-gold text-sm md:text-base font-bold tracking-[0.4em] uppercase mb-4">Luxury Transfers & Chauffeur</h2>
+        <h2 className="text-gold text-sm md:text-base font-bold tracking-[0.4em] uppercase mb-4">Premium Transfer & Chauffeur Services</h2>
         <h1 className="text-5xl md:text-8xl font-bold mb-8 leading-tight">
-          Marbella • Málaga <br />
-          <span className="text-gold italic">Gibraltar</span>
+          Transfers <span className="text-gold italic">Marbella</span> Málaga <br />
+          <span className="text-white">Gibraltar</span>
         </h1>
         <p className="text-gray-200 text-lg md:text-xl max-w-3xl mx-auto mb-10 leading-relaxed font-light">
-          Transfers throughout <span className="text-white font-medium">Andalusia</span> based in <span className="text-white font-medium">Marbella</span>. <br className="hidden md:block" />
-          Specialized in Málaga Airport, Gibraltar, and Port connections.
+          Reliable private transfers throughout <span className="text-white font-medium">Andalusia</span>. <br className="hidden md:block" />
+          Specialized in <span className="text-white font-medium">Málaga Airport (AGP)</span>, luxury chauffeur hire, and port connections with local Marbella expertise.
         </p>
         
         <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
@@ -52,6 +53,7 @@ const Hero: React.FC = () => {
             href={WHATSAPP_LINK}
             target="_blank"
             rel="noopener noreferrer"
+            aria-label="Book your Marbella transfer via WhatsApp"
             className="w-full sm:w-auto px-10 py-5 bg-gold hover:bg-white text-black font-bold uppercase tracking-widest transition-all rounded-sm flex items-center justify-center gap-3 shadow-xl shadow-gold/20"
           >
             Instant Quote <MessageSquare size={20} />
@@ -60,7 +62,7 @@ const Hero: React.FC = () => {
             href="#flota"
             className="w-full sm:w-auto px-10 py-5 border border-white/30 hover:bg-white/10 text-white font-bold uppercase tracking-widest transition-all rounded-sm backdrop-blur-sm"
           >
-            See Vehicle
+            Explore Fleet
           </a>
         </div>
       </div>

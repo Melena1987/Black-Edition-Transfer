@@ -1,6 +1,11 @@
 {
   "name": "Black Edition Transfer Marbella",
-  "description": "Premium private transfer and chauffeur service based in Marbella, covering Andalusia and beyond. Luxury vehicles for airport, port, and long-distance transfers.",
+  "short_name": "Black Edition",
+  "description": "Exclusive VIP private transfers and luxury chauffeur service in Marbella, Málaga Airport, and Gibraltar. Premium Mercedes Black Edition fleet available 24/7.",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#c5a059",
   "requestFramePermissions": [
     "geolocation"
   ]
