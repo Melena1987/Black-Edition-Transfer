@@ -1,0 +1,7 @@
+{
+  "name": "Black Edition Transfer Marbella",
+  "description": "Premium private transfer and chauffeur service based in Marbella, covering Andalusia and beyond. Luxury vehicles for airport, port, and long-distance transfers.",
+  "requestFramePermissions": [
+    "geolocation"
+  ]
+}
