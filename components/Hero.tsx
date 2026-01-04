@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { ChevronDown, MessageSquare } from 'lucide-react';
+import { ChevronDown, MessageSquare, MapPin } from 'lucide-react';
 import { WHATSAPP_LINK } from '../constants';
 
 const Hero: React.FC = () => {
@@ -30,44 +30,49 @@ const Hero: React.FC = () => {
           <img 
             src={heroImageUrl} 
             alt="Mercedes Black Edition XL Luxury Transfer Marbella" 
-            className="w-full h-full object-cover brightness-[0.5]"
+            className="w-full h-full object-cover brightness-[0.45]"
             loading="eager"
           />
         </div>
-        <div className="absolute inset-0 bg-gradient-to-b from-black/70 via-black/20 to-black"></div>
+        <div className="absolute inset-0 bg-gradient-to-b from-black/80 via-black/30 to-black"></div>
       </div>
 
-      <div className="relative z-10 text-center px-6 max-w-5xl animate-in fade-in slide-in-from-bottom duration-1000">
-        <h2 className="text-gold text-sm md:text-base font-bold tracking-[0.4em] uppercase mb-4">Premium Transfer & Chauffeur Services</h2>
-        <h1 className="text-5xl md:text-8xl font-bold mb-8 leading-tight">
-          Transfers <span className="text-gold italic">Marbella</span> Málaga <br />
-          <span className="text-white">Gibraltar</span>
+      <div className="relative z-10 text-center px-6 max-w-6xl animate-in fade-in slide-in-from-bottom duration-1000">
+        <div className="flex items-center justify-center gap-2 text-gold text-xs md:text-sm font-bold tracking-[0.4em] uppercase mb-6 bg-white/5 backdrop-blur-sm px-4 py-2 rounded-full border border-gold/20 inline-flex">
+          <MapPin size={14} /> Base en Marbella
+        </div>
+        
+        <h1 className="text-4xl md:text-7xl lg:text-8xl font-bold mb-8 leading-[1.1]">
+          Transfers en <span className="text-gold italic serif">toda Andalucía</span> <br />
+          <span className="text-white text-3xl md:text-5xl lg:text-6xl block mt-2 font-light">Málaga Airport & Gibraltar</span>
         </h1>
-        <p className="text-gray-200 text-lg md:text-xl max-w-3xl mx-auto mb-10 leading-relaxed font-light">
-          Reliable private transfers throughout <span className="text-white font-medium">Andalusia</span>. <br className="hidden md:block" />
-          Specialized in <span className="text-white font-medium">Málaga Airport (AGP)</span>, luxury chauffeur hire, and port connections with local Marbella expertise.
+        
+        <p className="text-gray-300 text-base md:text-xl max-w-3xl mx-auto mb-12 leading-relaxed font-light">
+          Your premier choice for luxury private transport. Serving <span className="text-white font-medium">Puerto Banús</span>, 
+          <span className="text-white font-medium"> Málaga (AGP)</span>, and <span className="text-white font-medium">Gibraltar</span> with 
+          unmatched VIP excellence.
         </p>
         
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+        <div className="flex flex-col sm:flex-row gap-5 justify-center items-center">
           <a 
             href={WHATSAPP_LINK}
             target="_blank"
             rel="noopener noreferrer"
             aria-label="Book your Marbella transfer via WhatsApp"
-            className="w-full sm:w-auto px-10 py-5 bg-gold hover:bg-white text-black font-bold uppercase tracking-widest transition-all rounded-sm flex items-center justify-center gap-3 shadow-xl shadow-gold/20"
+            className="w-full sm:w-auto px-12 py-5 bg-gold hover:bg-white text-black font-extrabold uppercase tracking-widest transition-all rounded-sm flex items-center justify-center gap-3 shadow-2xl shadow-gold/30 hover:-translate-y-1"
           >
             Instant Quote <MessageSquare size={20} />
           </a>
           <a 
             href="#flota"
-            className="w-full sm:w-auto px-10 py-5 border border-white/30 hover:bg-white/10 text-white font-bold uppercase tracking-widest transition-all rounded-sm backdrop-blur-sm"
+            className="w-full sm:w-auto px-12 py-5 border border-white/20 hover:border-gold/50 hover:bg-white/5 text-white font-bold uppercase tracking-widest transition-all rounded-sm backdrop-blur-sm"
           >
             Explore Fleet
           </a>
         </div>
       </div>
 
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce text-gold/50 hidden md:block">
+      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-bounce text-gold/30 hidden md:block">
         <ChevronDown size={32} />
       </div>
     </section>
