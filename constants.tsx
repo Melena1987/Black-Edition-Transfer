@@ -16,22 +16,22 @@ export const SERVICES = [
   },
   {
     id: 'ports',
-    title: 'Ports & Banús',
-    description: 'Exclusive service at Puerto Banús and the Ports of Malaga, Algeciras, Tarifa, and Gibraltar. Direct connections for VIP maritime travelers.',
+    title: 'Ports',
+    description: 'Exclusive service at the Ports of Malaga, Algeciras, Tarifa, and Gibraltar. Direct connections for cruise passengers and maritime transfers.',
     icon: <Ship className="w-6 h-6" />,
     image: 'https://firebasestorage.googleapis.com/v0/b/galeriaoficialapp.firebasestorage.app/o/users%2FI5KZz4BuUEfxcoAvSCAWllkQtwt1%2Fphotos%2F1766914685733_fenomenal.jpg?alt=media&token=547f16a4-b3cc-4c52-b61a-197137ecfe1d'
   },
   {
     id: 'long-distance',
     title: 'Andalusia & Beyond',
-    description: 'Complete coverage across Andalusia (Seville, Granada, Ronda, Sierra Nevada), Madrid, and international transfers to Portugal.',
+    description: 'Intercity journeys from Marbella to all of Andalusia (Seville, Granada, Ronda), Madrid, and international transfers to Portugal.',
     icon: <Globe className="w-6 h-6" />,
     image: 'https://firebasestorage.googleapis.com/v0/b/galeriaoficialapp.firebasestorage.app/o/users%2FI5KZz4BuUEfxcoAvSCAWllkQtwt1%2Fphotos%2F1766914685732_image_processing20230908-2-dzjyjy.jpg?alt=media&token=ab23e54c-634d-412d-8a03-83765b40007c'
   },
   {
     id: 'disposition',
     title: 'Hourly Hire',
-    description: 'Vehicle and professional chauffeur at your full disposal in Marbella and surroundings. Total flexibility for events and luxury shopping.',
+    description: 'Vehicle and professional chauffeur at your full disposal in Marbella and surroundings. Total flexibility for events and shopping.',
     icon: <Clock className="w-6 h-6" />,
     image: 'https://firebasestorage.googleapis.com/v0/b/galeriaoficialapp.firebasestorage.app/o/users%2FI5KZz4BuUEfxcoAvSCAWllkQtwt1%2Fphotos%2F1766914271335_WhatsApp_Image_2025-12-26_at_23.37.37.jpeg?alt=media&token=31f9faa9-7dec-4ff1-b9bd-01bb1c0f26ae'
   }
