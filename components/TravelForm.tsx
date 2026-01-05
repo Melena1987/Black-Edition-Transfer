@@ -1,11 +1,12 @@
 
 import React, { useState } from 'react';
-import { User, Calendar, Clock, Phone, MapPin, Users, Send, MapPinned, Mail, Luggage, MessageSquare, Loader2 } from 'lucide-react';
+import { User, Calendar, Clock, Phone, MapPin, Users, Send, MapPinned, Mail, Luggage, MessageSquare, Loader2, CheckCircle2 } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 import { WHATSAPP_NUMBER } from '../constants';
 
 const TravelForm: React.FC = () => {
   const [isSending, setIsSending] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -53,42 +54,47 @@ ${formData.observations ? `- Observations: ${formData.observations}` : ''}
 
 Please let me know the availability and price. Thank you!`;
 
-    // 1. Send via EmailJS
+    // 1. Send via EmailJS (Mandatory execution)
     try {
-      // Accessing environment variables via process.env as per the execution context requirement.
-      const serviceId = process.env.VITE_EMAILJS_SERVICE_ID;
-      const templateId = process.env.VITE_EMAILJS_TEMPLATE_ID;
-      const publicKey = process.env.VITE_EMAILJS_PUBLIC_KEY;
+      // Accessing environment variables via process.env
+      const serviceId = process.env.VITE_EMAILJS_SERVICE_ID || 'service_default';
+      const templateId = process.env.VITE_EMAILJS_TEMPLATE_ID || 'template_default';
+      const publicKey = process.env.VITE_EMAILJS_PUBLIC_KEY || 'user_default';
 
-      if (serviceId && templateId && publicKey) {
-        await emailjs.send(
-          serviceId,
-          templateId,
-          {
-            from_name: formData.name,
-            from_email: formData.email,
-            phone: formData.phone,
-            date: formData.date,
-            time: formData.time,
-            origin: formData.origin,
-            destination: formData.destination,
-            passengers: formData.passengers,
-            luggage: formData.luggage,
-            observations: formData.observations,
-            message: message
-          },
-          publicKey
-        );
-        alert('Enquiry received! We have sent your request via email.');
-      }
+      await emailjs.send(
+        serviceId,
+        templateId,
+        {
+          from_name: formData.name,
+          from_email: formData.email,
+          phone: formData.phone,
+          date: formData.date,
+          time: formData.time,
+          origin: formData.origin,
+          destination: formData.destination,
+          passengers: formData.passengers,
+          luggage: formData.luggage,
+          observations: formData.observations,
+          message: message
+        },
+        publicKey
+      );
+      
+      setIsSuccess(true);
+      setTimeout(() => setIsSuccess(false), 5000);
     } catch (error) {
-      console.error('EmailJS Error:', error);
-      alert('Email service is currently busy, but don\'t worry! We will redirect you to WhatsApp to complete your booking.');
+      console.error('EmailJS Execution Error:', error);
+      // Even if email fails, we continue to the WhatsApp fallback so the customer isn't lost
     } finally {
-      // 2. Always redirect to WhatsApp as a premium secondary touchpoint
+      // 2. Redirect to WhatsApp as secondary contact channel
       const encoded = encodeURIComponent(message);
-      window.open(`https://wa.me/${WHATSAPP_NUMBER.replace(/\+/g, '')}?text=${encoded}`, '_blank');
-      setIsSending(false);
+      const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER.replace(/\+/g, '')}?text=${encoded}`;
+      
+      // Delay slightly for visual feedback of success if it was sent
+      setTimeout(() => {
+        window.open(whatsappUrl, '_blank');
+        setIsSending(false);
+      }, 1000);
     }
   };
 
@@ -96,10 +102,31 @@ Please let me know the availability and price. Thank you!`;
   const iconClasses = "absolute left-4 top-1/2 -translate-y-1/2 text-gold opacity-70";
   const labelClasses = "block text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-2 ml-1";
 
+  if (isSuccess) {
+    return (
+      <div className="py-12 text-center animate-in fade-in zoom-in duration-500">
+        <div className="flex justify-center mb-6">
+          <div className="bg-gold/20 p-6 rounded-full border border-gold/30">
+            <CheckCircle2 size={48} className="text-gold" />
+          </div>
+        </div>
+        <h3 className="text-2xl font-bold mb-3 serif">Request Received!</h3>
+        <p className="text-gray-400 max-w-sm mx-auto mb-8">
+          We have sent your details via email. Our team is also preparing your quote on WhatsApp.
+        </p>
+        <button 
+          onClick={() => setIsSuccess(false)}
+          className="text-gold text-xs uppercase tracking-widest font-bold hover:text-white transition-colors"
+        >
+          Send another request
+        </button>
+      </div>
+    );
+  }
+
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Name */}
         <div className="relative">
           <label className={labelClasses}>Full Name</label>
           <div className="relative">
@@ -116,7 +143,6 @@ Please let me know the availability and price. Thank you!`;
           </div>
         </div>
 
-        {/* Email - Optional */}
         <div className="relative">
           <label className={labelClasses}>Email Address (Optional)</label>
           <div className="relative">
@@ -134,7 +160,6 @@ Please let me know the availability and price. Thank you!`;
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Phone */}
         <div className="relative">
           <label className={labelClasses}>Phone Number</label>
           <div className="relative">
@@ -151,7 +176,6 @@ Please let me know the availability and price. Thank you!`;
           </div>
         </div>
 
-        {/* Travel Date */}
         <div className="relative">
           <label className={labelClasses}>Travel Date</label>
           <div className="relative">
@@ -169,7 +193,6 @@ Please let me know the availability and price. Thank you!`;
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Time */}
         <div className="relative">
           <label className={labelClasses}>Pickup Time</label>
           <div className="relative">
@@ -185,7 +208,6 @@ Please let me know the availability and price. Thank you!`;
           </div>
         </div>
 
-        {/* Passengers */}
         <div className="relative">
           <label className={labelClasses}>Passengers</label>
           <div className="relative">
@@ -205,9 +227,8 @@ Please let me know the availability and price. Thank you!`;
           </div>
         </div>
 
-        {/* Luggage Dropdown */}
         <div className="relative">
-          <label className={labelClasses}>Luggage Amount</label>
+          <label className={labelClasses}>Luggage</label>
           <div className="relative">
             <Luggage size={18} className={iconClasses} />
             <select 
@@ -228,7 +249,6 @@ Please let me know the availability and price. Thank you!`;
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Origin */}
         <div className="relative">
           <div className="flex justify-between items-end mb-2">
             <label className={labelClasses}>Pickup Location</label>
@@ -256,7 +276,6 @@ Please let me know the availability and price. Thank you!`;
           </div>
         </div>
 
-        {/* Destination */}
         <div className="relative">
           <label className={labelClasses}>Destination</label>
           <div className="relative pt-[22px]">
@@ -274,7 +293,6 @@ Please let me know the availability and price. Thank you!`;
         </div>
       </div>
 
-      {/* Observations - Optional */}
       <div className="relative">
         <label className={labelClasses}>Observations (Optional)</label>
         <div className="relative">
@@ -302,14 +320,10 @@ Please let me know the availability and price. Thank you!`;
         ) : (
           <>
             <Send size={18} />
-            Request Instant Quote
+            Send Quote via Email & WhatsApp
           </>
         )}
       </button>
-      
-      <p className="text-center text-[10px] text-gray-500 uppercase tracking-widest">
-        Available 24/7 • Professional Multi-lingual Chauffeurs
-      </p>
     </form>
   );
 };

@@ -8,6 +8,7 @@ import Fleet from './components/Fleet';
 import Contact from './components/Contact';
 import Legal from './components/Legal';
 import CookieBanner from './components/CookieBanner';
+import BookingAssistant from './components/BookingAssistant';
 
 type View = 'home' | 'legal';
 
@@ -21,10 +22,8 @@ function App() {
       const anchor = target.closest('a');
       
       if (anchor && anchor.hash && anchor.origin === window.location.origin) {
-        // If we are in legal view and click a home link, switch back
         if (view === 'legal' && anchor.hash.startsWith('#')) {
           setView('home');
-          // Wait for render then scroll
           setTimeout(() => {
             const targetElement = document.querySelector(anchor.hash);
             if (targetElement) targetElement.scrollIntoView({ behavior: 'smooth' });
@@ -61,6 +60,17 @@ function App() {
         {view === 'home' ? (
           <>
             <Hero />
+            
+            <section className="bg-black py-20">
+               <div className="max-w-4xl mx-auto px-6">
+                 <div className="text-center mb-12">
+                   <h2 className="text-3xl md:text-5xl font-bold mb-4 serif">AI Booking <span className="text-gold italic">Assistant</span></h2>
+                   <p className="text-gray-400">Quickly draft your request by typing naturally.</p>
+                 </div>
+                 <BookingAssistant />
+               </div>
+            </section>
+
             <Services />
             <TrustQuote />
             <Fleet />
