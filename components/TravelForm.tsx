@@ -1,20 +1,23 @@
 
 import React, { useState } from 'react';
-import { User, Calendar, Clock, Phone, MapPin, Users, Send, MapPinned } from 'lucide-react';
+import { User, Calendar, Clock, Phone, MapPin, Users, Send, MapPinned, Mail, Luggage, MessageSquare } from 'lucide-react';
 import { WHATSAPP_NUMBER } from '../constants';
 
 const TravelForm: React.FC = () => {
   const [formData, setFormData] = useState({
     name: '',
+    email: '',
     date: '',
     time: '',
     phone: '',
     origin: '',
     destination: '',
-    passengers: '1'
+    passengers: '1',
+    luggage: '1-2 Large',
+    observations: ''
   });
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
@@ -34,12 +37,15 @@ const TravelForm: React.FC = () => {
     const message = `Hello Black Edition Transfer! 
 I would like to request a quote for a luxury transfer:
 - Name: ${formData.name}
+- Email: ${formData.email || 'Not provided'}
 - Date: ${formData.date}
 - Time: ${formData.time}
 - Passengers: ${formData.passengers}
+- Luggage: ${formData.luggage}
 - Pickup: ${formData.origin}
 - Destination: ${formData.destination}
 - Contact Phone: ${formData.phone}
+${formData.observations ? `- Observations: ${formData.observations}` : ''}
 
 Please let me know the availability and price. Thank you!`;
 
@@ -70,6 +76,23 @@ Please let me know the availability and price. Thank you!`;
           </div>
         </div>
 
+        {/* Email - Optional */}
+        <div className="relative">
+          <label className={labelClasses}>Email Address (Optional)</label>
+          <div className="relative">
+            <Mail size={18} className={iconClasses} />
+            <input 
+              type="email" 
+              name="email"
+              placeholder="email@example.com"
+              className={inputClasses}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {/* Phone */}
         <div className="relative">
           <label className={labelClasses}>Phone Number</label>
@@ -85,10 +108,8 @@ Please let me know the availability and price. Thank you!`;
             />
           </div>
         </div>
-      </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-        {/* Date */}
+        {/* Travel Date */}
         <div className="relative">
           <label className={labelClasses}>Travel Date</label>
           <div className="relative">
@@ -102,7 +123,9 @@ Please let me know the availability and price. Thank you!`;
             />
           </div>
         </div>
+      </div>
 
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
         {/* Time */}
         <div className="relative">
           <label className={labelClasses}>Pickup Time</label>
@@ -136,47 +159,83 @@ Please let me know the availability and price. Thank you!`;
             </select>
           </div>
         </div>
-      </div>
 
-      {/* Origin */}
-      <div className="relative">
-        <div className="flex justify-between items-end mb-2">
-          <label className={labelClasses}>Pickup Location</label>
-          <button 
-            type="button"
-            onClick={handleUseLocation}
-            className="text-[9px] text-gold hover:text-white flex items-center gap-1 uppercase tracking-tighter mb-2 transition-colors"
-          >
-            <MapPinned size={10} /> Use my location
-          </button>
-        </div>
+        {/* Luggage Dropdown */}
         <div className="relative">
-          <MapPin size={18} className={iconClasses} />
-          <input 
-            required
-            type="text" 
-            name="origin"
-            value={formData.origin}
-            placeholder="Airport, Hotel, or Address"
-            className={inputClasses}
-            onChange={handleChange}
-          />
+          <label className={labelClasses}>Luggage Amount</label>
+          <div className="relative">
+            <Luggage size={18} className={iconClasses} />
+            <select 
+              name="luggage"
+              className={inputClasses}
+              onChange={handleChange}
+              value={formData.luggage}
+            >
+              <option value="Hand Luggage only" className="bg-zinc-900 text-white">Hand luggage only</option>
+              <option value="1-2 Large Suitcases" className="bg-zinc-900 text-white">1-2 Large Suitcases</option>
+              <option value="3-5 Large Suitcases" className="bg-zinc-900 text-white">3-5 Large Suitcases</option>
+              <option value="6-8 Large Suitcases" className="bg-zinc-900 text-white">6-8 Large Suitcases</option>
+              <option value="9+ Large Suitcases" className="bg-zinc-900 text-white">9+ Large Suitcases</option>
+            </select>
+          </div>
         </div>
       </div>
 
-      {/* Destination */}
-      <div className="relative">
-        <label className={labelClasses}>Destination</label>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Origin */}
         <div className="relative">
-          <MapPin size={18} className={iconClasses} />
-          <input 
-            required
-            type="text" 
-            name="destination"
-            placeholder="Drop-off point"
-            className={inputClasses}
+          <div className="flex justify-between items-end mb-2">
+            <label className={labelClasses}>Pickup Location</label>
+            <button 
+              type="button"
+              onClick={handleUseLocation}
+              className="text-[9px] text-gold hover:text-white flex items-center gap-1 uppercase tracking-tighter mb-2 transition-colors"
+            >
+              <MapPinned size={10} /> Use my location
+            </button>
+          </div>
+          <div className="relative">
+            <MapPin size={18} className={iconClasses} />
+            <input 
+              required
+              type="text" 
+              name="origin"
+              value={formData.origin}
+              placeholder="Airport, Hotel, or Address"
+              className={inputClasses}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+
+        {/* Destination */}
+        <div className="relative">
+          <label className={labelClasses}>Destination</label>
+          <div className="relative pt-[22px]">
+            <MapPin size={18} className="absolute left-4 top-[calc(50%+11px)] -translate-y-1/2 text-gold opacity-70" />
+            <input 
+              required
+              type="text" 
+              name="destination"
+              placeholder="Drop-off point"
+              className={inputClasses}
+              onChange={handleChange}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* Observations - Optional */}
+      <div className="relative">
+        <label className={labelClasses}>Observations (Optional)</label>
+        <div className="relative">
+          <MessageSquare size={18} className="absolute left-4 top-5 text-gold opacity-70" />
+          <textarea 
+            name="observations"
+            placeholder="e.g. Flight number, child seats required, extra stops..."
+            className={`${inputClasses} h-24 pt-4 resize-none`}
             onChange={handleChange}
-          />
+          ></textarea>
         </div>
       </div>
 
