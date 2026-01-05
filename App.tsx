@@ -8,7 +8,6 @@ import Fleet from './components/Fleet';
 import Contact from './components/Contact';
 import Legal from './components/Legal';
 import CookieBanner from './components/CookieBanner';
-import BookingAssistant from './components/BookingAssistant';
 
 type View = 'home' | 'legal';
 
@@ -61,16 +60,6 @@ function App() {
           <>
             <Hero />
             
-            <section className="bg-black py-20">
-               <div className="max-w-4xl mx-auto px-6">
-                 <div className="text-center mb-12">
-                   <h2 className="text-3xl md:text-5xl font-bold mb-4 serif">AI Booking <span className="text-gold italic">Assistant</span></h2>
-                   <p className="text-gray-400">Quickly draft your request by typing naturally.</p>
-                 </div>
-                 <BookingAssistant />
-               </div>
-            </section>
-
             <Services />
             <TrustQuote />
             <Fleet />
