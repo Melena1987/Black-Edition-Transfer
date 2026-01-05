@@ -1,9 +1,11 @@
 
 import React, { useState } from 'react';
-import { User, Calendar, Clock, Phone, MapPin, Users, Send, MapPinned, Mail, Luggage, MessageSquare } from 'lucide-react';
+import { User, Calendar, Clock, Phone, MapPin, Users, Send, MapPinned, Mail, Luggage, MessageSquare, Loader2 } from 'lucide-react';
+import emailjs from '@emailjs/browser';
 import { WHATSAPP_NUMBER } from '../constants';
 
 const TravelForm: React.FC = () => {
+  const [isSending, setIsSending] = useState(false);
   const [formData, setFormData] = useState({
     name: '',
     email: '',
@@ -32,8 +34,10 @@ const TravelForm: React.FC = () => {
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsSending(true);
+
     const message = `Hello Black Edition Transfer! 
 I would like to request a quote for a luxury transfer:
 - Name: ${formData.name}
@@ -49,8 +53,43 @@ ${formData.observations ? `- Observations: ${formData.observations}` : ''}
 
 Please let me know the availability and price. Thank you!`;
 
-    const encoded = encodeURIComponent(message);
-    window.open(`https://wa.me/${WHATSAPP_NUMBER.replace(/\+/g, '')}?text=${encoded}`, '_blank');
+    // 1. Send via EmailJS
+    try {
+      // Accessing environment variables via process.env as per the execution context requirement.
+      const serviceId = process.env.VITE_EMAILJS_SERVICE_ID;
+      const templateId = process.env.VITE_EMAILJS_TEMPLATE_ID;
+      const publicKey = process.env.VITE_EMAILJS_PUBLIC_KEY;
+
+      if (serviceId && templateId && publicKey) {
+        await emailjs.send(
+          serviceId,
+          templateId,
+          {
+            from_name: formData.name,
+            from_email: formData.email,
+            phone: formData.phone,
+            date: formData.date,
+            time: formData.time,
+            origin: formData.origin,
+            destination: formData.destination,
+            passengers: formData.passengers,
+            luggage: formData.luggage,
+            observations: formData.observations,
+            message: message
+          },
+          publicKey
+        );
+        alert('Enquiry received! We have sent your request via email.');
+      }
+    } catch (error) {
+      console.error('EmailJS Error:', error);
+      alert('Email service is currently busy, but don\'t worry! We will redirect you to WhatsApp to complete your booking.');
+    } finally {
+      // 2. Always redirect to WhatsApp as a premium secondary touchpoint
+      const encoded = encodeURIComponent(message);
+      window.open(`https://wa.me/${WHATSAPP_NUMBER.replace(/\+/g, '')}?text=${encoded}`, '_blank');
+      setIsSending(false);
+    }
   };
 
   const inputClasses = "w-full bg-black/40 border border-white/10 rounded-xl px-11 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/50 transition-all text-sm";
@@ -72,6 +111,7 @@ Please let me know the availability and price. Thank you!`;
               placeholder="e.g. John Doe"
               className={inputClasses}
               onChange={handleChange}
+              disabled={isSending}
             />
           </div>
         </div>
@@ -87,6 +127,7 @@ Please let me know the availability and price. Thank you!`;
               placeholder="email@example.com"
               className={inputClasses}
               onChange={handleChange}
+              disabled={isSending}
             />
           </div>
         </div>
@@ -105,6 +146,7 @@ Please let me know the availability and price. Thank you!`;
               placeholder="+34 000 000 000"
               className={inputClasses}
               onChange={handleChange}
+              disabled={isSending}
             />
           </div>
         </div>
@@ -120,6 +162,7 @@ Please let me know the availability and price. Thank you!`;
               name="date"
               className={inputClasses}
               onChange={handleChange}
+              disabled={isSending}
             />
           </div>
         </div>
@@ -137,6 +180,7 @@ Please let me know the availability and price. Thank you!`;
               name="time"
               className={inputClasses}
               onChange={handleChange}
+              disabled={isSending}
             />
           </div>
         </div>
@@ -151,6 +195,7 @@ Please let me know the availability and price. Thank you!`;
               className={inputClasses}
               onChange={handleChange}
               value={formData.passengers}
+              disabled={isSending}
             >
               {[1,2,3,4,5,6,7].map(num => (
                 <option key={num} value={num} className="bg-zinc-900 text-white">{num} Passengers</option>
@@ -170,6 +215,7 @@ Please let me know the availability and price. Thank you!`;
               className={inputClasses}
               onChange={handleChange}
               value={formData.luggage}
+              disabled={isSending}
             >
               <option value="Hand Luggage only" className="bg-zinc-900 text-white">Hand luggage only</option>
               <option value="1-2 Large Suitcases" className="bg-zinc-900 text-white">1-2 Large Suitcases</option>
@@ -189,7 +235,8 @@ Please let me know the availability and price. Thank you!`;
             <button 
               type="button"
               onClick={handleUseLocation}
-              className="text-[9px] text-gold hover:text-white flex items-center gap-1 uppercase tracking-tighter mb-2 transition-colors"
+              disabled={isSending}
+              className="text-[9px] text-gold hover:text-white flex items-center gap-1 uppercase tracking-tighter mb-2 transition-colors disabled:opacity-30"
             >
               <MapPinned size={10} /> Use my location
             </button>
@@ -204,6 +251,7 @@ Please let me know the availability and price. Thank you!`;
               placeholder="Airport, Hotel, or Address"
               className={inputClasses}
               onChange={handleChange}
+              disabled={isSending}
             />
           </div>
         </div>
@@ -220,6 +268,7 @@ Please let me know the availability and price. Thank you!`;
               placeholder="Drop-off point"
               className={inputClasses}
               onChange={handleChange}
+              disabled={isSending}
             />
           </div>
         </div>
@@ -235,16 +284,27 @@ Please let me know the availability and price. Thank you!`;
             placeholder="e.g. Flight number, child seats required, extra stops..."
             className={`${inputClasses} h-24 pt-4 resize-none`}
             onChange={handleChange}
+            disabled={isSending}
           ></textarea>
         </div>
       </div>
 
       <button 
         type="submit"
-        className="w-full py-5 bg-gold hover:bg-white text-black font-bold uppercase tracking-[0.2em] rounded-xl flex items-center justify-center gap-3 transition-all transform hover:scale-[1.01] active:scale-[0.98] shadow-lg shadow-gold/10 mt-4"
+        disabled={isSending}
+        className="w-full py-5 bg-gold hover:bg-white text-black font-bold uppercase tracking-[0.2em] rounded-xl flex items-center justify-center gap-3 transition-all transform hover:scale-[1.01] active:scale-[0.98] shadow-lg shadow-gold/10 mt-4 disabled:opacity-70 disabled:hover:bg-gold disabled:cursor-not-allowed"
       >
-        <Send size={18} />
-        Request Instant Quote
+        {isSending ? (
+          <>
+            <Loader2 size={18} className="animate-spin" />
+            Processing Request...
+          </>
+        ) : (
+          <>
+            <Send size={18} />
+            Request Instant Quote
+          </>
+        )}
       </button>
       
       <p className="text-center text-[10px] text-gray-500 uppercase tracking-widest">
