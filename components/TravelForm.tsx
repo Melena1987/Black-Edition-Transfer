@@ -1,7 +1,9 @@
-import React, { useState } from 'react';
-import { User, Calendar, Clock, Phone, MapPin, Users, Send, MapPinned, Mail, Luggage, MessageSquare, Loader2, CheckCircle2 } from 'lucide-react';
+
+import React, { useState, useEffect, useRef } from 'react';
+import { User, Calendar, Clock, Phone, MapPin, Users, Send, MapPinned, Mail, Luggage, MessageSquare, Loader2, CheckCircle2, Search } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 import { WHATSAPP_NUMBER } from '../constants';
+import { getPlaceSuggestions } from '../services/gemini';
 
 const TravelForm: React.FC = () => {
   const [isSending, setIsSending] = useState(false);
@@ -19,8 +21,43 @@ const TravelForm: React.FC = () => {
     observations: ''
   });
 
+  const [originSuggestions, setOriginSuggestions] = useState<string[]>([]);
+  const [destSuggestions, setDestSuggestions] = useState<string[]>([]);
+  const [activeInput, setActiveInput] = useState<'origin' | 'destination' | null>(null);
+  const [isSearching, setIsSearching] = useState(false);
+
+  const dateInputRef = useRef<HTMLInputElement>(null);
+
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
+    const { name, value } = e.target;
+    setFormData({ ...formData, [name]: value });
+
+    if (name === 'origin' || name === 'destination') {
+      handleAutocomplete(name, value);
+    }
+  };
+
+  const handleAutocomplete = async (name: 'origin' | 'destination', value: string) => {
+    if (value.length < 3) {
+      name === 'origin' ? setOriginSuggestions([]) : setDestSuggestions([]);
+      return;
+    }
+
+    setIsSearching(true);
+    const suggestions = await getPlaceSuggestions(value);
+    if (name === 'origin') {
+      setOriginSuggestions(suggestions);
+    } else {
+      setDestSuggestions(suggestions);
+    }
+    setIsSearching(false);
+  };
+
+  const selectSuggestion = (name: 'origin' | 'destination', value: string) => {
+    setFormData({ ...formData, [name]: value });
+    if (name === 'origin') setOriginSuggestions([]);
+    else setDestSuggestions([]);
+    setActiveInput(null);
   };
 
   const handleUseLocation = () => {
@@ -56,7 +93,6 @@ ${formData.observations ? `- Observations: ${formData.observations}` : ''}
 Please let me know the availability and price. Thank you!`;
 
     try {
-      // Correct Vite-compatible access to environment variables
       const env = (import.meta as any).env;
       const serviceId = env.VITE_EMAILJS_SERVICE_ID;
       const templateId = env.VITE_EMAILJS_TEMPLATE_ID;
@@ -82,13 +118,10 @@ Please let me know the availability and price. Thank you!`;
           publicKey
         );
         setIsSuccess(true);
-      } else {
-        console.warn("EmailJS configuration not found. Proceeding with WhatsApp redirect only.");
       }
     } catch (error) {
       console.error('EmailJS Error:', error);
     } finally {
-      // Always provide WhatsApp fallback for immediate contact
       const encoded = encodeURIComponent(message);
       const whatsappUrl = `https://wa.me/${WHATSAPP_NUMBER.replace(/\+/g, '')}?text=${encoded}`;
       
@@ -105,9 +138,34 @@ Please let me know the availability and price. Thank you!`;
     }
   };
 
+  const handleDateClick = () => {
+    if (dateInputRef.current) {
+      // Modern browsers allow triggering the native picker
+      if ('showPicker' in HTMLInputElement.prototype) {
+        try {
+          dateInputRef.current.showPicker();
+        } catch (e) {
+          dateInputRef.current.focus();
+        }
+      } else {
+        dateInputRef.current.focus();
+      }
+    }
+  };
+
   const inputClasses = "w-full bg-black/40 border border-white/10 rounded-xl px-11 py-3 text-white placeholder:text-gray-600 focus:outline-none focus:border-gold focus:ring-1 focus:ring-gold/50 transition-all text-sm";
   const iconClasses = "absolute left-4 top-1/2 -translate-y-1/2 text-gold opacity-70";
   const labelClasses = "block text-[10px] uppercase tracking-widest text-gray-500 font-bold mb-2 ml-1";
+
+  // Close suggestions on outside click
+  useEffect(() => {
+    const handleClickOutside = () => {
+      setOriginSuggestions([]);
+      setDestSuggestions([]);
+    };
+    window.addEventListener('click', handleClickOutside);
+    return () => window.removeEventListener('click', handleClickOutside);
+  }, []);
 
   if (isSuccess) {
     return (
@@ -159,9 +217,18 @@ Please let me know the availability and price. Thank you!`;
         </div>
         <div className="relative">
           <label className={labelClasses}>Travel Date</label>
-          <div className="relative">
+          <div className="relative cursor-pointer" onClick={handleDateClick}>
             <Calendar size={18} className={iconClasses} />
-            <input required type="date" name="date" className={inputClasses} onChange={handleChange} disabled={isSending} value={formData.date} />
+            <input 
+              ref={dateInputRef}
+              required 
+              type="date" 
+              name="date" 
+              className={`${inputClasses} cursor-pointer [&::-webkit-calendar-picker-indicator]:opacity-0 [&::-webkit-calendar-picker-indicator]:absolute [&::-webkit-calendar-picker-indicator]:inset-0 [&::-webkit-calendar-picker-indicator]:cursor-pointer`} 
+              onChange={handleChange} 
+              disabled={isSending} 
+              value={formData.date} 
+            />
           </div>
         </div>
       </div>
@@ -198,21 +265,86 @@ Please let me know the availability and price. Thank you!`;
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        <div className="relative">
+        {/* Pickup Location */}
+        <div className="relative" onClick={(e) => e.stopPropagation()}>
           <div className="flex justify-between items-end mb-2">
             <label className={labelClasses}>Pickup Location</label>
             <button type="button" onClick={handleUseLocation} disabled={isSending} className="text-[9px] text-gold hover:text-white flex items-center gap-1 uppercase tracking-tighter mb-2 transition-colors disabled:opacity-30"><MapPinned size={10} /> Use my location</button>
           </div>
           <div className="relative">
             <MapPin size={18} className={iconClasses} />
-            <input required type="text" name="origin" value={formData.origin} placeholder="Airport, Hotel, or Address" className={inputClasses} onChange={handleChange} disabled={isSending} />
+            <input 
+              required 
+              type="text" 
+              name="origin" 
+              autoComplete="off"
+              value={formData.origin} 
+              placeholder="Airport, Hotel, or Address" 
+              className={inputClasses} 
+              onChange={handleChange} 
+              onFocus={() => setActiveInput('origin')}
+              disabled={isSending} 
+            />
+            {isSearching && activeInput === 'origin' && (
+              <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                <Loader2 size={14} className="text-gold animate-spin" />
+              </div>
+            )}
+            
+            {originSuggestions.length > 0 && activeInput === 'origin' && (
+              <ul className="absolute z-[60] w-full mt-2 bg-zinc-900/95 backdrop-blur-xl border border-white/10 rounded-xl overflow-hidden shadow-2xl animate-in fade-in slide-in-from-top-2 duration-200">
+                {originSuggestions.map((s, i) => (
+                  <li 
+                    key={i} 
+                    onClick={() => selectSuggestion('origin', s)}
+                    className="px-4 py-3 text-sm text-gray-300 hover:bg-gold hover:text-black cursor-pointer transition-colors flex items-center gap-3"
+                  >
+                    <Search size={14} className="opacity-50" />
+                    {s}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
-        <div className="relative">
+
+        {/* Destination */}
+        <div className="relative" onClick={(e) => e.stopPropagation()}>
           <label className={labelClasses}>Destination</label>
           <div className="relative pt-[22px]">
             <MapPin size={18} className="absolute left-4 top-[calc(50%+11px)] -translate-y-1/2 text-gold opacity-70" />
-            <input required type="text" name="destination" placeholder="Drop-off point" className={inputClasses} onChange={handleChange} disabled={isSending} value={formData.destination} />
+            <input 
+              required 
+              type="text" 
+              name="destination" 
+              autoComplete="off"
+              placeholder="Drop-off point" 
+              className={inputClasses} 
+              onChange={handleChange} 
+              onFocus={() => setActiveInput('destination')}
+              disabled={isSending} 
+              value={formData.destination} 
+            />
+            {isSearching && activeInput === 'destination' && (
+              <div className="absolute right-4 top-[calc(50%+11px)] -translate-y-1/2">
+                <Loader2 size={14} className="text-gold animate-spin" />
+              </div>
+            )}
+
+            {destSuggestions.length > 0 && activeInput === 'destination' && (
+              <ul className="absolute z-[60] w-full mt-2 bg-zinc-900/95 backdrop-blur-xl border border-white/10 rounded-xl overflow-hidden shadow-2xl animate-in fade-in slide-in-from-top-2 duration-200">
+                {destSuggestions.map((s, i) => (
+                  <li 
+                    key={i} 
+                    onClick={() => selectSuggestion('destination', s)}
+                    className="px-4 py-3 text-sm text-gray-300 hover:bg-gold hover:text-black cursor-pointer transition-colors flex items-center gap-3"
+                  >
+                    <Search size={14} className="opacity-50" />
+                    {s}
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
         </div>
       </div>

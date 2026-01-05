@@ -36,3 +36,27 @@ export const parseTravelRequest = async (prompt: string) => {
     return null;
   }
 };
+
+export const getPlaceSuggestions = async (query: string) => {
+  if (!query || query.length < 3) return [];
+  
+  try {
+    const response = await ai.models.generateContent({
+      model: 'gemini-3-flash-preview',
+      contents: `Provide 5 realistic location suggestions in Andalusia (Marbella, Malaga, Gibraltar, etc.) for the query: "${query}". Return only a JSON array of strings.`,
+      config: {
+        systemInstruction: "You are a location expert for a luxury transfer company in Marbella. Focus on airports, famous hotels, ports, and main urbanizations in the Costa del Sol area.",
+        responseMimeType: "application/json",
+        responseSchema: {
+          type: Type.ARRAY,
+          items: { type: Type.STRING }
+        }
+      }
+    });
+
+    return JSON.parse(response.text || '[]');
+  } catch (error) {
+    console.error("Gemini suggestions error:", error);
+    return [];
+  }
+};
