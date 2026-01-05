@@ -2,6 +2,7 @@
 import React, { useEffect, useState } from 'react';
 import Navbar from './components/Navbar';
 import Hero from './components/Hero';
+import BrandMessage from './components/BrandMessage';
 import Services from './components/Services';
 import TrustQuote from './components/TrustQuote';
 import Fleet from './components/Fleet';
@@ -59,7 +60,7 @@ function App() {
         {view === 'home' ? (
           <>
             <Hero />
-            
+            <BrandMessage />
             <Services />
             <TrustQuote />
             <Fleet />
