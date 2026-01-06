@@ -1,6 +1,6 @@
 
 import React, { useState, useEffect } from 'react';
-import { MapPin, Calendar, Users, Search, Loader2, Luggage, User, Phone, Mail, CheckCircle2 } from 'lucide-react';
+import { MapPin, Calendar, Users, Search, Loader2, Luggage, User, Phone, Mail, CheckCircle2, ArrowRight } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 import { getPlaceSuggestions } from '../services/gemini';
 import { WHATSAPP_NUMBER } from '../constants';
@@ -107,7 +107,7 @@ const HeroBookingForm: React.FC = () => {
                   value={formData.origin}
                   onChange={(e) => handleAutocomplete('origin', e.target.value)}
                   onFocus={() => setActiveField('origin')}
-                  autoComplete="off"
+                  autoComplete="shipping address-line1"
                 />
               </div>
               {activeField === 'origin' && suggestions.length > 0 && (
@@ -124,7 +124,7 @@ const HeroBookingForm: React.FC = () => {
                   value={formData.destination}
                   onChange={(e) => handleAutocomplete('destination', e.target.value)}
                   onFocus={() => setActiveField('destination')}
-                  autoComplete="off"
+                  autoComplete="shipping address-line1"
                 />
               </div>
               {activeField === 'destination' && suggestions.length > 0 && (
@@ -179,24 +179,26 @@ const HeroBookingForm: React.FC = () => {
               </div>
             </div>
 
-            <div className={`${cellClass} col-span-2 md:col-span-2.5 border-b md:border-b-0 md:border-r border-white/10`}>
+            <div className={`${cellClass} col-span-2 md:col-span-2 border-b md:border-b-0 md:border-r border-white/10`}>
               <label className={labelClass}>Name</label>
               <div className="flex items-center gap-2">
                 <User size={14} className={iconClass} />
                 <input 
                   required type="text" placeholder="Full Name" className={inputClass}
                   value={formData.name} onChange={(e) => setFormData({...formData, name: e.target.value})}
+                  autoComplete="name"
                 />
               </div>
             </div>
 
             <div className={`${cellClass} col-span-1 md:col-span-2 border-r border-white/10`}>
-              <label className={labelClass}>Phone</label>
+              <label className={labelClass}>Phone (+Code)</label>
               <div className="flex items-center gap-2">
                 <Phone size={14} className={iconClass} />
                 <input 
-                  required type="tel" placeholder="Contact" className={inputClass}
+                  required type="tel" placeholder="+34..." className={inputClass}
                   value={formData.phone} onChange={(e) => setFormData({...formData, phone: e.target.value})}
+                  autoComplete="tel"
                 />
               </div>
             </div>
@@ -208,17 +210,19 @@ const HeroBookingForm: React.FC = () => {
                 <input 
                   type="email" placeholder="Email" className={inputClass}
                   value={formData.email} onChange={(e) => setFormData({...formData, email: e.target.value})}
+                  autoComplete="email"
                 />
               </div>
             </div>
 
-            <div className="col-span-2 md:col-span-2.5 flex">
+            <div className="col-span-2 md:col-span-3 flex">
               <button 
                 type="submit" disabled={isSending}
-                className="w-full bg-[#c5a059] hover:bg-white text-black font-black uppercase tracking-[0.2em] text-[11px] h-full flex items-center justify-center gap-3 transition-all px-4 py-5 md:py-0 min-h-[60px] md:min-h-0"
+                className="w-full bg-[#c5a059] hover:bg-white text-black font-black uppercase tracking-[0.2em] text-[11px] h-full flex items-center justify-center gap-3 transition-all px-4 py-5 md:py-0 min-h-[60px] md:min-h-0 group"
               >
                 {isSending ? <Loader2 size={16} className="animate-spin" /> : (isSuccess ? <CheckCircle2 size={16} /> : <Search size={16} />)}
                 <span>{isSuccess ? "Sent" : "Get Quote"}</span>
+                {!isSending && !isSuccess && <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />}
               </button>
             </div>
           </div>

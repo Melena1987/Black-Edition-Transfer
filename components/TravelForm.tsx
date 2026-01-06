@@ -196,23 +196,23 @@ Please let me know the availability and price. Thank you!`;
           <label className={labelClasses}>Full Name</label>
           <div className="relative">
             <User size={18} className={iconClasses} />
-            <input required type="text" name="name" placeholder="e.g. John Doe" className={inputClasses} onChange={handleChange} disabled={isSending} value={formData.name} />
+            <input required type="text" name="name" placeholder="e.g. John Doe" className={inputClasses} onChange={handleChange} disabled={isSending} value={formData.name} autoComplete="name" />
           </div>
         </div>
         <div className="relative">
           <label className={labelClasses}>Email Address (Optional)</label>
           <div className="relative">
             <Mail size={18} className={iconClasses} />
-            <input type="email" name="email" placeholder="email@example.com" className={inputClasses} onChange={handleChange} disabled={isSending} value={formData.email} />
+            <input type="email" name="email" placeholder="email@example.com" className={inputClasses} onChange={handleChange} disabled={isSending} value={formData.email} autoComplete="email" />
           </div>
         </div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         <div className="relative">
-          <label className={labelClasses}>Phone Number</label>
+          <label className={labelClasses}>Phone (inc. Country Code)</label>
           <div className="relative">
             <Phone size={18} className={iconClasses} />
-            <input required type="tel" name="phone" placeholder="+34 000 000 000" className={inputClasses} onChange={handleChange} disabled={isSending} value={formData.phone} />
+            <input required type="tel" name="phone" placeholder="+34 000 000 000" className={inputClasses} onChange={handleChange} disabled={isSending} value={formData.phone} autoComplete="tel" />
           </div>
         </div>
         <div className="relative">
@@ -277,7 +277,7 @@ Please let me know the availability and price. Thank you!`;
               required 
               type="text" 
               name="origin" 
-              autoComplete="off"
+              autoComplete="shipping address-line1"
               value={formData.origin} 
               placeholder="Airport, Hotel, or Address" 
               className={inputClasses} 
@@ -317,7 +317,7 @@ Please let me know the availability and price. Thank you!`;
               required 
               type="text" 
               name="destination" 
-              autoComplete="off"
+              autoComplete="shipping address-line1"
               placeholder="Drop-off point" 
               className={inputClasses} 
               onChange={handleChange} 
