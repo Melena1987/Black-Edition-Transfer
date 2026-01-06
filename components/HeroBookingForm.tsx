@@ -1,5 +1,5 @@
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { MapPin, Calendar, Users, Search, Loader2, Luggage, User, Phone, Mail, CheckCircle2, ArrowRight } from 'lucide-react';
 import emailjs from '@emailjs/browser';
 import { getPlaceSuggestions } from '../services/gemini';
@@ -21,13 +21,29 @@ const HeroBookingForm: React.FC = () => {
   const [suggestions, setSuggestions] = useState<string[]>([]);
   const [activeField, setActiveField] = useState<'origin' | 'destination' | null>(null);
   const [isSearching, setIsSearching] = useState(false);
+  
+  const formRef = useRef<HTMLFormElement>(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (formRef.current && !formRef.current.contains(event.target as Node)) {
+        setActiveField(null);
+        setSuggestions([]);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   const handleAutocomplete = async (field: 'origin' | 'destination', value: string) => {
     setFormData(prev => ({ ...prev, [field]: value }));
+    setActiveField(field);
+    
     if (value.length < 3) {
       setSuggestions([]);
       return;
     }
+    
     setIsSearching(true);
     const results = await getPlaceSuggestions(value);
     setSuggestions(results);
@@ -92,9 +108,9 @@ const HeroBookingForm: React.FC = () => {
   const iconClass = "text-zinc-500 shrink-0";
 
   return (
-    <div className="w-full max-w-6xl mx-auto px-4 md:px-0">
-      <div className="bg-[#080808]/95 backdrop-blur-2xl border border-white/10 rounded-xl overflow-hidden shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)]">
-        <form onSubmit={handleSubmit} className="flex flex-col">
+    <div className="w-full max-w-6xl mx-auto px-4 md:px-0 relative z-20">
+      <div className="bg-[#080808]/95 backdrop-blur-2xl border border-white/10 rounded-xl shadow-[0_30px_60px_-15px_rgba(0,0,0,0.8)]">
+        <form ref={formRef} onSubmit={handleSubmit} className="flex flex-col">
           
           {/* Row 1: Core Logistics */}
           <div className="grid grid-cols-1 md:grid-cols-12 border-b border-white/10">
@@ -109,6 +125,7 @@ const HeroBookingForm: React.FC = () => {
                   onFocus={() => setActiveField('origin')}
                   autoComplete="shipping address-line1"
                 />
+                {isSearching && activeField === 'origin' && <Loader2 size={12} className="animate-spin text-gold" />}
               </div>
               {activeField === 'origin' && suggestions.length > 0 && (
                 <SuggestionList suggestions={suggestions} onSelect={selectSuggestion} />
@@ -126,13 +143,14 @@ const HeroBookingForm: React.FC = () => {
                   onFocus={() => setActiveField('destination')}
                   autoComplete="shipping address-line1"
                 />
+                {isSearching && activeField === 'destination' && <Loader2 size={12} className="animate-spin text-gold" />}
               </div>
               {activeField === 'destination' && suggestions.length > 0 && (
                 <SuggestionList suggestions={suggestions} onSelect={selectSuggestion} />
               )}
             </div>
 
-            <div className={`${cellClass} md:col-span-4`}>
+            <div className={`${cellClass} md:col-span-4 rounded-tr-xl`}>
               <label className={labelClass}>Date & Time</label>
               <div className="flex items-center gap-3">
                 <Calendar size={16} className={iconClass} />
@@ -218,7 +236,7 @@ const HeroBookingForm: React.FC = () => {
             <div className="col-span-2 md:col-span-3 flex">
               <button 
                 type="submit" disabled={isSending}
-                className="w-full bg-[#c5a059] hover:bg-white text-black font-black uppercase tracking-[0.2em] text-[11px] h-full flex items-center justify-center gap-3 transition-all px-4 py-5 md:py-0 min-h-[60px] md:min-h-0 group"
+                className="w-full bg-[#c5a059] hover:bg-white text-black font-black uppercase tracking-[0.2em] text-[11px] h-full flex items-center justify-center gap-3 transition-all px-4 py-5 md:py-0 min-h-[60px] md:min-h-0 group rounded-br-xl"
               >
                 {isSending ? <Loader2 size={16} className="animate-spin" /> : (isSuccess ? <CheckCircle2 size={16} /> : <Search size={16} />)}
                 <span>{isSuccess ? "Sent" : "Get Quote"}</span>
@@ -242,7 +260,7 @@ const HeroBookingForm: React.FC = () => {
 };
 
 const SuggestionList = ({ suggestions, onSelect }: { suggestions: string[], onSelect: (v: string) => void }) => (
-  <ul className="absolute z-[100] top-full left-0 w-full mt-2 bg-zinc-900/98 backdrop-blur-3xl border border-white/10 rounded-lg overflow-hidden shadow-2xl py-1">
+  <ul className="absolute z-[100] top-full left-0 w-full mt-2 bg-zinc-900/98 backdrop-blur-3xl border border-white/10 rounded-lg overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.5)] py-1 animate-in fade-in slide-in-from-top-2 duration-200">
     {suggestions.map((s, i) => (
       <li 
         key={i} 
