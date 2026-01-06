@@ -3,7 +3,6 @@ import { GoogleGenAI, Type } from "@google/genai";
 
 export const parseTravelRequest = async (prompt: string) => {
   try {
-    // Create a new instance right before making an API call to ensure it uses the up-to-date API key.
     const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
     
     const response = await ai.models.generateContent({
@@ -31,8 +30,12 @@ export const parseTravelRequest = async (prompt: string) => {
     });
 
     return JSON.parse(response.text || '{}');
-  } catch (error) {
+  } catch (error: any) {
     console.error("Gemini parse error:", error);
+    if (error?.message?.includes("Requested entity was not found")) {
+      // Trigger a re-selection if possible or handle globally
+      (window as any).dispatchEvent(new CustomEvent('gemini-api-error'));
+    }
     return null;
   }
 };
@@ -41,8 +44,13 @@ export const getPlaceSuggestions = async (query: string) => {
   if (!query || query.length < 3) return [];
   
   try {
-    // Create a new instance right before making an API call.
-    const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+    const apiKey = process.env.API_KEY;
+    if (!apiKey) {
+      console.warn("API Key not found in process.env");
+      return [];
+    }
+
+    const ai = new GoogleGenAI({ apiKey });
 
     const response = await ai.models.generateContent({
       model: 'gemini-3-flash-preview',
@@ -58,8 +66,11 @@ export const getPlaceSuggestions = async (query: string) => {
     });
 
     return JSON.parse(response.text || '[]');
-  } catch (error) {
+  } catch (error: any) {
     console.error("Gemini suggestions error:", error);
+    if (error?.message?.includes("Requested entity was not found") || error?.message?.includes("API Key must be set")) {
+      (window as any).dispatchEvent(new CustomEvent('gemini-api-error'));
+    }
     return [];
   }
 };
